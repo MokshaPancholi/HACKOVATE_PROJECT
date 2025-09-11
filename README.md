@@ -1,0 +1,2 @@
+# HACKOVATE_PROJECT
+LJ Hackavote 2025
