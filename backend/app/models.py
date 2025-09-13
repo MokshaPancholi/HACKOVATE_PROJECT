@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
     An extension of the default User model to include Google-specific fields.
     """
     google_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    profile_picture = models.URLField(max_length=500, null=True, blank=True)
+    password = models.URLField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return self.username
@@ -165,21 +165,6 @@ class Investment(models.Model):
         return f"{self.user.username}'s Investment in {self.name}"
 
 # --- Financial Health Model ---
-
-# --- User Financial Profile Model ---
-class FinancialProfile(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='financial_profiles')
-    net_worth = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
-    monthly_budget = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    total_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
-    monthly_spending = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    investments = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
-    credit_score = models.IntegerField(validators=[MinValueValidator(300), MaxValueValidator(850)], default=300)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.user.username} Financial Profile ({self.created_at.date()})"
 
 class CreditScore(models.Model):
     """
