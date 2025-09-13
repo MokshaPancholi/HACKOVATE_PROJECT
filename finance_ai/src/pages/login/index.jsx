@@ -30,6 +30,14 @@ const Login = () => {
           <div className="flex-1 flex items-center justify-center p-6 lg:p-8">
             <div className="w-full max-w-md space-y-8">
               <LoginForm />
+              <button
+                type="button"
+                className="w-full mt-4 py-2 px-4 bg-white border border-border rounded-lg flex items-center justify-center space-x-2 shadow hover:bg-gray-50 transition"
+                onClick={() => window.location.href = 'http://localhost:8000/auth/login/google-oauth2/'}
+              >
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" className="w-5 h-5 mr-2" />
+                <span className="font-medium text-foreground">Sign in with Google</span>
+              </button>
               
               {/* Mobile Welcome Message */}
               <div className="lg:hidden">

@@ -46,6 +46,8 @@ from django.conf import settings
 # Assuming your custom user model is in a 'models.py' in the same app
 # from .models import CustomUser 
 
+from django.views.generic import TemplateView
+
 class ReactAppView(TemplateView):
     template_name = "index.html"
 

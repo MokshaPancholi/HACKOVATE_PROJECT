@@ -42,8 +42,24 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken', 
     'corsheaders',  
+    'social_django',
     # 'finance_chatbot',
 ]
+
+# Social Auth settings for Google OAuth
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '629995453588-7nteslto2gqsclun4rg6t7eegnbqlorn.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Add social_django context processors to TEMPLATES after TEMPLATES is defined
+# (Move this code after TEMPLATES definition below)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +73,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core_project.urls'
+
 
 TEMPLATES = [
     {
@@ -73,6 +90,11 @@ TEMPLATES = [
     },
 ]
 
+# Add social_django context processors
+TEMPLATES[0]['OPTIONS']['context_processors'] += [
+    'social_django.context_processors.backends',
+    'social_django.context_processors.login_redirect',
+]
 WSGI_APPLICATION = 'core_project.wsgi.application'
 
 
@@ -105,9 +127,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # CORS settings for local frontend
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4028",
+    "http://127.0.0.1:4028",
+    "http://172.16.3.24:4028"
+]
 
 
 # Internationalization
