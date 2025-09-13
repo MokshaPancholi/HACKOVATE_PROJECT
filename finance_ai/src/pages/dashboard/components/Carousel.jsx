@@ -49,8 +49,11 @@ const Carousel = ({ children }) => {
       {/* Main Carousel Content */}
       <div className="flex-1 overflow-x-hidden w-full">
         <div
-          className="flex transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${current * 100}%)` }}
+          className="flex"
+          style={{
+            transform: `translateX(-${current * 100}%)`,
+            transition: 'transform 1.2s cubic-bezier(0.77, 0, 0.175, 1)'
+          }}
         >
           {React.Children.map(children, (child, idx) => (
             <div className="w-full flex-shrink-0">
