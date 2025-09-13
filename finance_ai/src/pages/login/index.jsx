@@ -10,12 +10,10 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (isAuthenticated === 'true') {
-      navigate('/dashboard');
-    }
-  }, [navigate]);
+    // Always clear authentication for development to force sign-in page
+    localStorage.removeItem('isAuthenticated');
+    // If you want to keep this only for dev, wrap in if (process.env.NODE_ENV === 'development')
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">

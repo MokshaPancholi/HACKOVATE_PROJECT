@@ -16,8 +16,8 @@ const Routes = () => {
       <ErrorBoundary>
       <ScrollToTop />
       <RouterRoutes>
-        {/* Define your route here */}
-        <Route path="/" element={<AIChatInterface />} />
+  {/* Redirect root path to /login */}
+  <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/financial-data-overview" element={<FinancialDataOverview />} />
         <Route path="/login" element={<Login />} />
         <Route path="/privacy-permissions" element={<PrivacyPermissions />} />
@@ -30,5 +30,6 @@ const Routes = () => {
     </BrowserRouter>
   );
 };
+import { Navigate } from "react-router-dom";
 
 export default Routes;
