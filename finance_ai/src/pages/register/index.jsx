@@ -87,27 +87,28 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call for registration
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock successful registration
-      console.log('Registration successful:', {
-        user: registrationData?.formData,
-        permissions,
-        agreements,
-        registrationDate: new Date()?.toISOString()
+      // Map confirmPassword to password2 for backend
+      const regData = { ...registrationData?.formData, password2: registrationData?.formData?.confirmPassword };
+      const res = await fetch('http://127.0.0.1:8000/api/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(regData)
       });
-
-      // Navigate to verification page or dashboard
-      navigate('/dashboard', { 
-        state: { 
-          message: 'Registration successful! Please check your email for verification.',
-          type: 'success'
-        }
-      });
+      const result = await res.json();
+      if (res.ok && result.id) {
+        // Fetch financial profile for the new user
+        const profileRes = await fetch(`http://127.0.0.1:8000/api/financial-profile/?user=${result.id}`);
+        const profileData = await profileRes.json();
+        // Navigate to dashboard with financial profile
+        navigate('/dashboard', { state: { financialProfile: profileData } });
+      } else {
+        let errorMsg = 'Registration failed.';
+        if (result && typeof result === 'object') errorMsg += '\n' + JSON.stringify(result);
+        alert(errorMsg);
+      }
     } catch (error) {
       console.error('Registration failed:', error);
-      // Handle registration error
+      alert('Registration failed. ' + error);
     } finally {
       setIsLoading(false);
     }

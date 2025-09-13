@@ -7,10 +7,18 @@ import QuickActions from './components/QuickActions';
 import Carousel from './components/Carousel';
 
 const Dashboard = () => {
+  const [financialProfile, setFinancialProfile] = React.useState(null);
   useEffect(() => {
     // Check for saved language preference
     const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
-    // Set current language state if needed
+    // Fetch financial profile from backend
+    fetch('http://127.0.0.1:8000/api/financial-profile/')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFinancialProfile(data[data.length - 1]); // Show latest
+        }
+      });
   }, []);
 
   return (
@@ -26,12 +34,12 @@ const Dashboard = () => {
         <main className="pt-16">
           <div className="max-w-7xl mx-auto px-6 py-8">
             {/* Welcome Section */}
-            <WelcomeHeader />
+            <WelcomeHeader financialProfile={financialProfile} />
 
             {/* Carousel for Financial Metrics, Quick Actions, and Financial Health Score */}
             <Carousel>
               <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full min-h-[400px] flex flex-col justify-between">
-                <FinancialMetricsCards />
+                <FinancialMetricsCards financialProfile={financialProfile} />
               </div>
               <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full min-h-[400px] flex flex-col justify-between">
                 <QuickActions />

@@ -2,14 +2,14 @@ import React from 'react';
 
 import Icon from '../../../components/AppIcon';
 
-const FinancialMetricsCards = () => {
+const FinancialMetricsCards = ({ financialProfile }) => {
   const metrics = [
     {
       id: 'total-balance',
       title: 'Total Balance',
-      value: '$24,580.50',
-      change: '+$1,240.00',
-      changePercent: '+5.3%',
+      value: `₹${financialProfile?.total_balance ?? '--'}`,
+      change: '+₹0.00',
+      changePercent: '+0.0%',
       trend: 'up',
       icon: 'Wallet',
       color: 'text-success',
@@ -19,9 +19,9 @@ const FinancialMetricsCards = () => {
     {
       id: 'monthly-spending',
       title: 'Monthly Spending',
-      value: '$3,240.80',
-      change: '-$180.20',
-      changePercent: '-5.3%',
+      value: `₹${financialProfile?.monthly_spending ?? '--'}`,
+      change: '-₹0.00',
+      changePercent: '-0.0%',
       trend: 'down',
       icon: 'CreditCard',
       color: 'text-primary',
@@ -31,9 +31,9 @@ const FinancialMetricsCards = () => {
     {
       id: 'credit-score',
       title: 'Credit Score',
-      value: '742',
-      change: '+12',
-      changePercent: '+1.6%',
+      value: `${financialProfile?.credit_score ?? '--'}`,
+      change: '+0',
+      changePercent: '+0.0%',
       trend: 'up',
       icon: 'TrendingUp',
       color: 'text-accent',
@@ -43,9 +43,9 @@ const FinancialMetricsCards = () => {
     {
       id: 'investments',
       title: 'Investments',
-      value: '$18,450.25',
-      change: '+$890.15',
-      changePercent: '+5.1%',
+      value: `₹${financialProfile?.investments ?? '--'}`,
+      change: '+₹0.00',
+      changePercent: '+0.0%',
       trend: 'up',
       icon: 'PieChart',
       color: 'text-warning',

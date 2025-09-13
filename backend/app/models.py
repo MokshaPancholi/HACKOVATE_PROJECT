@@ -166,6 +166,21 @@ class Investment(models.Model):
 
 # --- Financial Health Model ---
 
+# --- User Financial Profile Model ---
+class FinancialProfile(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='financial_profiles')
+    net_worth = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    monthly_budget = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    total_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    monthly_spending = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    investments = models.DecimalField(max_digits=15, decimal_places=2, default=0.0)
+    credit_score = models.IntegerField(validators=[MinValueValidator(300), MaxValueValidator(850)], default=300)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} Financial Profile ({self.created_at.date()})"
+
 class CreditScore(models.Model):
     """
     Stores a mock credit score for a user.
