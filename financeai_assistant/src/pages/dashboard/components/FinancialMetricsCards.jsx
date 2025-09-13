@@ -1,0 +1,102 @@
+import React from 'react';
+
+import Icon from '../../../components/AppIcon';
+
+const FinancialMetricsCards = () => {
+  const metrics = [
+    {
+      id: 'total-balance',
+      title: 'Total Balance',
+      value: '$24,580.50',
+      change: '+$1,240.00',
+      changePercent: '+5.3%',
+      trend: 'up',
+      icon: 'Wallet',
+      color: 'text-success',
+      bgColor: 'bg-success/10',
+      description: 'Across all accounts'
+    },
+    {
+      id: 'monthly-spending',
+      title: 'Monthly Spending',
+      value: '$3,240.80',
+      change: '-$180.20',
+      changePercent: '-5.3%',
+      trend: 'down',
+      icon: 'CreditCard',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
+      description: 'This month vs last month'
+    },
+    {
+      id: 'credit-score',
+      title: 'Credit Score',
+      value: '742',
+      change: '+12',
+      changePercent: '+1.6%',
+      trend: 'up',
+      icon: 'TrendingUp',
+      color: 'text-accent',
+      bgColor: 'bg-accent/10',
+      description: 'Excellent credit rating'
+    },
+    {
+      id: 'investments',
+      title: 'Investments',
+      value: '$18,450.25',
+      change: '+$890.15',
+      changePercent: '+5.1%',
+      trend: 'up',
+      icon: 'PieChart',
+      color: 'text-warning',
+      bgColor: 'bg-warning/10',
+      description: 'Portfolio performance'
+    }
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {metrics?.map((metric) => (
+        <div key={metric?.id} className="bg-card border border-border rounded-lg p-6 card-shadow hover:shadow-lg transition-smooth">
+          <div className="flex items-start justify-between mb-4">
+            <div className={`p-3 rounded-lg ${metric?.bgColor}`}>
+              <Icon name={metric?.icon} size={24} className={metric?.color} />
+            </div>
+            <div className={`flex items-center space-x-1 text-sm ${
+              metric?.trend === 'up' ? 'text-success' : 'text-error'
+            }`}>
+              <Icon 
+                name={metric?.trend === 'up' ? 'TrendingUp' : 'TrendingDown'} 
+                size={16} 
+              />
+              <span className="font-medium">{metric?.changePercent}</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              {metric?.title}
+            </h3>
+            <div className="space-y-1">
+              <p className="text-2xl font-bold text-foreground">
+                {metric?.value}
+              </p>
+              <div className="flex items-center space-x-2">
+                <span className={`text-sm font-medium ${
+                  metric?.trend === 'up' ? 'text-success' : 'text-error'
+                }`}>
+                  {metric?.change}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {metric?.description}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default FinancialMetricsCards;
