@@ -1,71 +1,69 @@
-import React, { useRef, useState, useRef as useReactRef } from 'react';
+
+import React, { useState, useRef } from 'react';
 
 const Carousel = ({ children }) => {
   const [current, setCurrent] = useState(0);
   const [visited, setVisited] = useState([0]);
-  const containerRef = useRef(null);
   const total = React.Children.count(children);
+  const lastNav = useRef(0);
+  const NAV_DELAY = 600; // ms, faster navigation
 
-
-  // Debounce navigation to slow down arrow key
-  const lastNavRef = useReactRef(0);
-  const NAV_DELAY = 1800; // ms
-
-  const scrollTo = (idx) => {
-    setCurrent(idx);
-    setVisited((prev) => prev.includes(idx) ? prev : [...prev, idx]);
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        left: containerRef.current.offsetWidth * idx,
-        behavior: 'smooth',
-      });
-    }
+  const goTo = (idx) => {
+    setCurrent((prev) => {
+      if (prev === idx) return prev;
+      setVisited((v) => v.includes(idx) ? v : [...v, idx]);
+      return idx;
+    });
   };
 
   const canNavigate = () => {
     const now = Date.now();
-    if (now - lastNavRef.current > NAV_DELAY) {
-      lastNavRef.current = now;
+    if (now - lastNav.current > NAV_DELAY) {
+      lastNav.current = now;
       return true;
     }
     return false;
   };
 
   const handlePrev = () => {
-    if (current > 0 && canNavigate()) scrollTo(current - 1);
+    if (current > 0 && canNavigate()) goTo(current - 1);
   };
   const handleNext = () => {
-    if (current < total - 1 && canNavigate()) scrollTo(current + 1);
+    if (current < total - 1 && canNavigate()) goTo(current + 1);
   };
 
   return (
-    <div className="relative w-full">
-      <div className="flex items-center">
+    <div className="relative w-full flex items-center">
+      {/* Left Arrow OUTSIDE */}
+      <div className="flex-shrink-0 flex items-center h-full">
         <button
-          className="z-10 p-2 bg-white/80 rounded-full shadow absolute left-2 top-1/2 -translate-y-1/2 disabled:opacity-30"
+          className="z-20 p-2 bg-white/80 rounded-full shadow -ml-8 disabled:opacity-30"
+          style={{ position: 'relative' }}
           onClick={handlePrev}
           disabled={current === 0}
           aria-label="Previous"
         >
           <span>&larr;</span>
         </button>
+      </div>
+      {/* Main Carousel Content */}
+      <div className="flex-1 overflow-x-hidden w-full">
         <div
-          ref={containerRef}
-          className="overflow-x-hidden w-full"
+          className="flex transition-transform duration-700 ease-in-out"
+          style={{ transform: `translateX(-${current * 100}%)` }}
         >
-          <div
-            className="flex transition-transform duration-300"
-            style={{ transform: `translateX(-${current * 100}%)` }}
-          >
-            {React.Children.map(children, (child, idx) => (
-              <div className="w-full flex-shrink-0">
-                {child}
-              </div>
-            ))}
-          </div>
+          {React.Children.map(children, (child, idx) => (
+            <div className="w-full flex-shrink-0">
+              {child}
+            </div>
+          ))}
         </div>
+      </div>
+      {/* Right Arrow OUTSIDE */}
+      <div className="flex-shrink-0 flex items-center h-full">
         <button
-          className="z-10 p-2 bg-white/80 rounded-full shadow absolute right-2 top-1/2 -translate-y-1/2 disabled:opacity-30"
+          className="z-20 p-2 bg-white/80 rounded-full shadow -mr-8 disabled:opacity-30"
+          style={{ position: 'relative' }}
           onClick={handleNext}
           disabled={current === total - 1}
           aria-label="Next"
@@ -73,22 +71,22 @@ const Carousel = ({ children }) => {
           <span>&rarr;</span>
         </button>
       </div>
-      <div className="flex justify-center mt-4 space-x-2">
+  <div className="absolute bottom-6 left-0 w-full flex justify-center space-x-2">
         {Array.from({ length: total }).map((_, idx) => {
-          let dotClass = 'w-2 h-2 rounded-full transition-colors duration-200 ';
+          let dotClass = 'w-2 h-2 rounded-full transition-colors duration-200 border border-gray-300 ';
           if (current === idx) {
             dotClass += 'bg-primary';
           } else if (visited.includes(idx)) {
             dotClass += 'bg-muted-foreground/60';
           } else {
-            dotClass += 'bg-gray-400';
+            dotClass += 'bg-black';
           }
           return (
             <button
               key={idx}
               className={dotClass}
               style={{ opacity: 1 }}
-              onClick={() => scrollTo(idx)}
+              onClick={() => goTo(idx)}
               aria-label={`Go to slide ${idx + 1}`}
             />
           );

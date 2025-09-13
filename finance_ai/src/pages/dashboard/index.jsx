@@ -30,32 +30,38 @@ const Dashboard = () => {
 
             {/* Carousel for Financial Metrics, Quick Actions, and Financial Health Score */}
             <Carousel>
-              <FinancialMetricsCards />
-              <QuickActions />
+              <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full min-h-[400px] flex flex-col justify-between">
+                <FinancialMetricsCards />
+              </div>
+              <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full min-h-[400px] flex flex-col justify-between">
+                <QuickActions />
+              </div>
               {/* Financial Health Score Slide */}
-              <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-foreground">Financial Health Score</h2>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-success rounded-full"></div>
-                    <span className="text-sm font-medium text-success">Excellent</span>
+              <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full min-h-[400px] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-foreground">Financial Health Score</h2>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-success rounded-full"></div>
+                      <span className="text-sm font-medium text-success">Excellent</span>
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-success mb-1">85/100</div>
-                    <div className="text-sm text-muted-foreground">Overall Score</div>
-                    <div className="text-xs text-muted-foreground mt-1">Above average</div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-primary mb-1">92/100</div>
-                    <div className="text-sm text-muted-foreground">Savings Rate</div>
-                    <div className="text-xs text-muted-foreground mt-1">Excellent</div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-warning mb-1">78/100</div>
-                    <div className="text-sm text-muted-foreground">Debt Management</div>
-                    <div className="text-xs text-muted-foreground mt-1">Good</div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 rounded-lg">
+                      <div className="text-2xl font-bold text-success mb-1">85/100</div>
+                      <div className="text-sm text-muted-foreground">Overall Score</div>
+                      <div className="text-xs text-muted-foreground mt-1">Above average</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 rounded-lg">
+                      <div className="text-2xl font-bold text-primary mb-1">92/100</div>
+                      <div className="text-sm text-muted-foreground">Savings Rate</div>
+                      <div className="text-xs text-muted-foreground mt-1">Excellent</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 rounded-lg">
+                      <div className="text-2xl font-bold text-warning mb-1">78/100</div>
+                      <div className="text-sm text-muted-foreground">Debt Management</div>
+                      <div className="text-xs text-muted-foreground mt-1">Good</div>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-6 p-4 bg-accent/10 rounded-lg">
