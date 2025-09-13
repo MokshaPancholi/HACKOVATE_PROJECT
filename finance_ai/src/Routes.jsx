@@ -4,6 +4,8 @@ import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "pages/NotFound";
 import FinancialDataOverview from './pages/financial-data-overview';
+import UserFinancialForm from './pages/dashboard/components/UserFinancialForm';
+import UserFinancialFormPage from './pages/register/UserFinancialFormPage';
 import Login from './pages/login';
 import PrivacyPermissions from './pages/privacy-permissions';
 import Dashboard from './pages/dashboard';
@@ -18,7 +20,9 @@ const Routes = () => {
       <RouterRoutes>
   {/* Redirect root path to /login */}
   <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/financial-data-overview" element={<FinancialDataOverview />} />
+  <Route path="/financial-data-overview" element={<FinancialDataOverview />} />
+  <Route path="/user-financial-form" element={<UserFinancialForm />} />
+  <Route path="/user-financial-form-page" element={<UserFinancialFormPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/privacy-permissions" element={<PrivacyPermissions />} />
         <Route path="/dashboard" element={<Dashboard />} />

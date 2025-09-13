@@ -1,3 +1,40 @@
+from .serializers import RegistrationSerializer
+# Registration API
+from rest_framework.decorators import api_view
+@api_view(['POST'])
+def register_api(request):
+    serializer = RegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({'id': user.id, 'username': user.username, 'email': user.email}, status=201)
+    return Response(serializer.errors, status=400)
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from .models import FinancialProfile
+from .serializers import FinancialProfileSerializer
+
+# FinancialProfile API
+@api_view(['POST', 'GET'])
+@permission_classes([AllowAny])  # Change to IsAuthenticated if you want auth
+def financial_profile_api(request):
+    if request.method == 'POST':
+        serializer = FinancialProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=201)
+            except Exception as e:
+                return Response({"error": str(e)}, status=400)
+        # Add more detailed error reporting for user field
+        errors = serializer.errors
+        if 'user' in errors:
+            errors['user_detail'] = "User ID provided does not exist or is invalid."
+        return Response(errors, status=400)
+    elif request.method == 'GET':
+        profiles = FinancialProfile.objects.all()
+        serializer = FinancialProfileSerializer(profiles, many=True)
+        return Response(serializer.data)
 import json
 import requests
 from django.shortcuts import redirect

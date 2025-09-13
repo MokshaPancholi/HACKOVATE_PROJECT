@@ -2,10 +2,10 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import PermissionStatusIndicator from '../../../components/ui/PermissionStatusIndicator';
 
-const WelcomeHeader = () => {
+const WelcomeHeader = ({ financialProfile }) => {
   const currentTime = new Date();
   const currentHour = currentTime?.getHours();
-  
+
   const getGreeting = () => {
     if (currentHour < 12) return 'Good morning';
     if (currentHour < 17) return 'Good afternoon';
@@ -28,13 +28,13 @@ const WelcomeHeader = () => {
   };
 
   return (
-  <div className="bg-white border border-border rounded-lg p-6 mb-8">
+    <div className="bg-white border border-border rounded-lg p-6 mb-8">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Icon name={getGreetingIcon()} size={24} className="text-primary" />
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-              {getGreeting()}, John!
+              {getGreeting()}, {financialProfile?.user?.username || 'User'}!
             </h1>
           </div>
           <p className="text-muted-foreground">
@@ -63,19 +63,19 @@ const WelcomeHeader = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <p className="text-sm font-medium text-foreground">Net Worth</p>
-            <p className="text-lg font-bold text-success">$42,130.75</p>
+            <p className="text-lg font-bold text-success">₹{financialProfile?.net_worth ?? '--'}</p>
           </div>
           <div className="text-center">
             <p className="text-sm font-medium text-foreground">Monthly Budget</p>
-            <p className="text-lg font-bold text-primary">$4,500.00</p>
+            <p className="text-lg font-bold text-primary">₹{financialProfile?.monthly_budget ?? '--'}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm font-medium text-foreground">Savings Rate</p>
-            <p className="text-lg font-bold text-accent">28.5%</p>
+            <p className="text-sm font-medium text-foreground">Total Balance</p>
+            <p className="text-lg font-bold text-accent">₹{financialProfile?.total_balance ?? '--'}</p>
           </div>
           <div className="text-center">
             <p className="text-sm font-medium text-foreground">Credit Score</p>
-            <p className="text-lg font-bold text-warning">742</p>
+            <p className="text-lg font-bold text-warning">{financialProfile?.credit_score ?? '--'}</p>
           </div>
         </div>
       </div>
