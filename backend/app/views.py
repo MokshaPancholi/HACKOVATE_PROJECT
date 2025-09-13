@@ -9,6 +9,9 @@ from django.conf import settings
 # Assuming your custom user model is in a 'models.py' in the same app
 # from .models import CustomUser 
 
+# class ReactAppView(TemplateView):
+#     template_name = "index.html"
+
 # --- MOCK FINANCIAL DATA ---
 MOCK_USER_FINANCIAL_DATA = {
     "assets": {
