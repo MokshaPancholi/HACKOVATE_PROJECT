@@ -48,67 +48,60 @@ const QuickActions = () => {
   ];
 
   return (
-    <div className="bg-card border border-border rounded-lg p-6 card-shadow">
-      <div className="flex items-center space-x-3 mb-6">
-        <div className="p-2 bg-secondary/10 rounded-lg">
-          <Icon name="Zap" size={20} className="text-secondary" />
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Quick Actions</h2>
-          <p className="text-sm text-muted-foreground">Frequently used features</p>
+  <div className="bg-card border border-border rounded-lg p-6 card-shadow w-full">
+      {/* Header exactly like Financial Health Score */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-foreground">Quick Actions</h2>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-secondary rounded-full"></div>
+          <span className="text-sm font-medium text-secondary">Available</span>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+  {/* 4-column grid, matching Financial Metrics Cards */}
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {actions?.map((action) => (
           <Link
             key={action?.id}
             to={action?.path}
-            className="group block p-4 bg-muted/30 hover:bg-muted/50 rounded-lg transition-smooth"
+            className="flex flex-col items-center justify-center text-center p-4 bg-muted/30 hover:bg-muted/50 rounded-lg transition-smooth h-full min-h-[170px]"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`p-2 rounded-lg ${action?.bgColor} group-hover:scale-105 transition-smooth`}>
-                <Icon name={action?.icon} size={20} className={action?.color} />
-              </div>
-              {action?.badge && (
-                <span className="px-2 py-1 text-xs font-medium bg-background text-muted-foreground rounded-full">
-                  {action?.badge}
-                </span>
-              )}
+            <div className={`p-3 rounded-lg mb-2 ${action?.bgColor} group-hover:scale-105 transition-smooth`}>
+              <Icon name={action?.icon} size={32} className={action?.color} />
             </div>
-            
-            <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-smooth">
-                {action?.title}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {action?.description}
-              </p>
+            <div className="text-base font-semibold text-foreground group-hover:text-primary transition-smooth">
+              {action?.title}
             </div>
-            
-            <div className="flex items-center justify-end mt-3">
-              <Icon 
-                name="ArrowRight" 
-                size={16} 
-                className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-smooth" 
-              />
+            <div className="text-xs text-muted-foreground mt-1">
+              {action?.description}
             </div>
+            {action?.badge && (
+              <span className="mt-2 px-2 py-1 text-xs font-medium bg-background text-muted-foreground rounded-full">
+                {action?.badge}
+              </span>
+            )}
+            <Icon 
+              name="ArrowRight" 
+              size={16} 
+              className="mt-2 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-smooth" 
+            />
           </Link>
         ))}
       </div>
-      {/* Additional Quick Stats */}
-      <div className="mt-6 pt-4 border-t border-border">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="space-y-1">
-            <p className="text-lg font-bold text-foreground">12</p>
-            <p className="text-xs text-muted-foreground">Connected Accounts</p>
+
+      {/* Info/tip section exactly like Financial Health Score tip */}
+      <div className="mt-6 p-4 bg-accent/10 rounded-lg">
+        <div className="flex items-start space-x-3">
+          <div className="p-1 bg-accent/20 rounded flex items-center justify-center">
+            <Icon name="Zap" size={16} className="text-accent" />
           </div>
-          <div className="space-y-1">
-            <p className="text-lg font-bold text-foreground">847</p>
-            <p className="text-xs text-muted-foreground">AI Conversations</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-lg font-bold text-foreground">98%</p>
-            <p className="text-xs text-muted-foreground">Data Accuracy</p>
+          <div>
+            <h3 className="text-sm font-medium text-foreground mb-1">
+              Tip: Use Quick Actions for Efficiency
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Access your most-used features instantly from here to save time and streamline your workflow.
+            </p>
           </div>
         </div>
       </div>

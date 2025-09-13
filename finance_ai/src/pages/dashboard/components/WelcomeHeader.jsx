@@ -28,7 +28,7 @@ const WelcomeHeader = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary/5 to-accent/5 border border-border rounded-lg p-6 mb-8">
+  <div className="bg-white border border-border rounded-lg p-6 mb-8">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
