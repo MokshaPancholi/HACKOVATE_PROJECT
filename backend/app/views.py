@@ -1,22 +1,53 @@
+
 from .serializers import RegistrationSerializer
-# Registration API
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth import authenticate, login, logout
+from app.models import CustomUser, UserProfile
+from .serializers import FinancialProfileSerializer
+from django.views.generic import TemplateView
+from django.shortcuts import redirect
+from django.http import HttpRequest, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+import json
+import requests
+
+# --- 1. User Authentication Views ---
+
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register_api(request):
     serializer = RegistrationSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        return Response({'id': user.id, 'username': user.username, 'email': user.email}, status=201)
-    return Response(serializer.errors, status=400)
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from .models import FinancialProfile
-from .serializers import FinancialProfileSerializer
+        return Response({'success': True, 'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
+    return Response({'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-# FinancialProfile API
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_user(request):
+    """
+    Handles user login using token authentication, which is suitable for SPAs.
+    """
+    email = request.data.get('email')
+    password = request.data.get('password') 
+    user = authenticate(username=email, password=password)
+
+    if user:
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_info': UserSerializer(user).data
+        })
+    return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
 @api_view(['POST', 'GET'])
-@permission_classes([AllowAny])  # Change to IsAuthenticated if you want auth
+@permission_classes([AllowAny])  
 def financial_profile_api(request):
     if request.method == 'POST':
         serializer = FinancialProfileSerializer(data=request.data)
@@ -26,46 +57,25 @@ def financial_profile_api(request):
                 return Response(serializer.data, status=201)
             except Exception as e:
                 return Response({"error": str(e)}, status=400)
-        # Add more detailed error reporting for user field
+
         errors = serializer.errors
         if 'user' in errors:
             errors['user_detail'] = "User ID provided does not exist or is invalid."
         return Response(errors, status=400)
+
     elif request.method == 'GET':
         profiles = FinancialProfile.objects.all()
         serializer = FinancialProfileSerializer(profiles, many=True)
         return Response(serializer.data)
-import json
-import requests
-from django.shortcuts import redirect
-from django.http import HttpRequest, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
-from django.conf import settings
-# Assuming your custom user model is in a 'models.py' in the same app
-# from .models import CustomUser 
 
-from django.views.generic import TemplateView
 
 class ReactAppView(TemplateView):
     template_name = "index.html"
 
-# --- MOCK FINANCIAL DATA ---
+
 MOCK_USER_FINANCIAL_DATA = {
-    "assets": {
-        "cash": 5000,
-        "bank_balances": {
-            "checking": 15000,
-            "savings": 50000
-        },
-        "property_value": 350000
-    },
-    "liabilities": {
-        "credit_card_debt": 2500,
-        "student_loan": 20000,
-        "mortgage": 250000
-    },
+    "assets": {"cash": 5000, "bank_balances": {"checking": 15000, "savings": 50000}, "property_value": 350000},
+    "liabilities": {"credit_card_debt": 2500, "student_loan": 20000, "mortgage": 250000},
     "transactions": [
         {"date": "2025-08-01", "description": "Salary Deposit", "amount": 5000, "type": "income"},
         {"date": "2025-08-03", "description": "Groceries", "amount": -150, "type": "expense", "category": "Food"},
@@ -78,15 +88,8 @@ MOCK_USER_FINANCIAL_DATA = {
         {"date": "2025-06-01", "description": "Salary Deposit", "amount": 5000, "type": "income"},
         {"date": "2025-06-05", "description": "Concert Tickets", "amount": -200, "type": "expense", "category": "Entertainment"},
     ],
-    "epf_retirement": {
-        "current_balance": 75000,
-        "employee_contribution_ytd": 6000,
-        "employer_match_ytd": 6000
-    },
-    "credit_score": {
-        "score": 780,
-        "rating": "Excellent"
-    },
+    "epf_retirement": {"current_balance": 75000, "employee_contribution_ytd": 6000, "employer_match_ytd": 6000},
+    "credit_score": {"score": 780, "rating": "Excellent"},
     "investments": {
         "stocks": [
             {"ticker": "AAPL", "shares": 10, "current_value": 1500},
@@ -98,11 +101,8 @@ MOCK_USER_FINANCIAL_DATA = {
     }
 }
 
-# --- AI Integration (Placeholder) ---
+
 def call_gemini_api(prompt: str, accessible_data: dict) -> str:
-    """
-    This is a placeholder for the actual API call to a generative AI model.
-    """
     query = prompt.split("Current user query:")[-1].strip().lower()
 
     if "credit score" in query and "credit_score" not in accessible_data:
@@ -122,9 +122,6 @@ def call_gemini_api(prompt: str, accessible_data: dict) -> str:
 
 @csrf_exempt
 def update_permissions(request: HttpRequest) -> JsonResponse:
-    """
-    API endpoint to grant or revoke access to financial data categories.
-    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -146,14 +143,12 @@ def update_permissions(request: HttpRequest) -> JsonResponse:
             return JsonResponse({'status': 'success', 'message': f'Permissions for {category} updated.'})
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON.'}, status=400)
+
     return JsonResponse({'status': 'error', 'message': 'Only POST method is allowed.'}, status=405)
 
 
 @csrf_exempt
 def chat_handler(request: HttpRequest) -> JsonResponse:
-    """
-    Main API endpoint for handling natural-language queries from the user.
-    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -179,7 +174,7 @@ def chat_handler(request: HttpRequest) -> JsonResponse:
 
             RULES:
             1. Your knowledge is STRICTLY limited to the JSON data provided below. Do not use external knowledge.
-            2. You MUST respect the user's privacy. If a user asks about a data category that is NOT present in the provided JSON, you MUST state that you do not have access to that information. For example, if the 'credit_score' key is missing, respond with: "I am unable to answer that question. You have not granted access to your credit score data."
+            2. You MUST respect the user's privacy. If a user asks about a data category that is NOT present in the provided JSON, you MUST state that you do not have access to that information.
             3. Provide clear, concise, and user-friendly answers.
             4. Maintain the context of the conversation.
 
@@ -203,21 +198,19 @@ def chat_handler(request: HttpRequest) -> JsonResponse:
             return JsonResponse({'reply': ai_response})
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON.'}, status=400)
+
     return JsonResponse({'status': 'error', 'message': 'Only POST method is allowed.'}, status=405)
 
-# --- Google Authentication Views ---
 
 def google_auth_login(request):
-    """Redirects the user to Google's OAuth consent screen."""
     redirect_uri = settings.GOOGLE_REDIRECT_URI
     client_id = settings.GOOGLE_CLIENT_ID
     return redirect(f"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=openid%20email%20profile")
 
+
 def google_auth_callback(request):
-    """Handles the callback from Google after user authentication."""
     code = request.GET.get('code')
-    
-    # Exchange authorization code for access token
+
     token_response = requests.post('https://oauth2.googleapis.com/token', data={
         'code': code,
         'client_id': settings.GOOGLE_CLIENT_ID,
@@ -225,18 +218,17 @@ def google_auth_callback(request):
         'redirect_uri': settings.GOOGLE_REDIRECT_URI,
         'grant_type': 'authorization_code',
     })
-    
+
     token_data = token_response.json()
     access_token = token_data.get('access_token')
 
     if not access_token:
-        return redirect('home') # Or an error page
+        return redirect('home')
 
-    # Fetch user information from Google
     user_info_response = requests.get('https://www.googleapis.com/oauth2/v1/userinfo', params={
         'access_token': access_token,
     })
-    
+
     user_info = user_info_response.json()
     google_id = user_info.get('id')
     email = user_info.get('email')
@@ -244,23 +236,15 @@ def google_auth_callback(request):
     picture = user_info.get('picture')
 
     if not google_id or not email:
-        return redirect('home') # Or an error page
+        return redirect('home')
 
-    # Get or create the user in your database
-    # NOTE: You need to have a CustomUser model with a 'google_id' field.
-    # user, created = CustomUser.objects.get_or_create(google_id=google_id, defaults={
-    #     'username': email,
-    #     'email': email,
-    #     'first_name': name,
-    #     'profile_picture': picture,
-    # })
+    return redirect('home')
 
-    # login(request, user)
-    return redirect('home') # Redirect to your main app page after login
 
 @login_required
 def logout_view(request):
-    """Logs the user out."""
-    logout(request)
-    return redirect('home')
-
+    try:
+        request.user.auth_token.delete()
+    except (AttributeError, Token.DoesNotExist):
+        pass # User was not logged in or token was already removed
+    return Response(status=status.HTTP_204_NO_CONTENT)

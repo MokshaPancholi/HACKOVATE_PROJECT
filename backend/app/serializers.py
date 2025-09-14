@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from .models import FinancialProfile, CustomUser
+from .models import UserProfile, CustomUser
 
 class FinancialProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FinancialProfile
+        model = UserProfile
         fields = ['id', 'user', 'net_worth', 'monthly_budget', 'total_balance', 'monthly_spending', 'investments', 'credit_score', 'created_at', 'updated_at']
 
 class UserSerializer(serializers.ModelSerializer):
