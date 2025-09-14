@@ -87,28 +87,48 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Map confirmPassword to password2 for backend
-      const regData = { ...registrationData?.formData, password2: registrationData?.formData?.confirmPassword };
-  const res = await fetch('http://localhost:8000/api/register/', {
+      // Split fullName into first_name and last_name
+      const fullName = registrationData?.formData?.fullName?.trim() || '';
+      const nameParts = fullName.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Map form data to backend expected format
+      const regData = {
+        email: registrationData?.formData?.email,
+        username: registrationData?.formData?.email, // Backend sets username = email
+        password: registrationData?.formData?.password,
+        password2: registrationData?.formData?.confirmPassword,
+        first_name: firstName,
+        last_name: lastName
+      };
+
+      const res = await fetch('http://localhost:8000/api/register/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(regData)
       });
+      
       const result = await res.json();
-      if (res.ok && result.id) {
-        // Fetch financial profile for the new user
-        const profileRes = await fetch(`http://127.0.0.1:8000/api/financial-profile/?user=${result.id}`);
-        const profileData = await profileRes.json();
-        // Navigate to dashboard with financial profile
-        navigate('/dashboard', { state: { financialProfile: profileData } });
+      
+      if (res.ok && result.success) {
+        // Registration successful - show success message and redirect to login
+        alert('Registration successful! You can now login with your credentials.');
+        navigate('/login');
       } else {
+        // Registration failed - show error details
         let errorMsg = 'Registration failed.';
-        if (result && typeof result === 'object') errorMsg += '\n' + JSON.stringify(result);
+        if (result.errors) {
+          const errorDetails = Object.values(result.errors).flat().join(', ');
+          errorMsg += ' ' + errorDetails;
+        } else if (result.message) {
+          errorMsg += ' ' + result.message;
+        }
         alert(errorMsg);
       }
     } catch (error) {
       console.error('Registration failed:', error);
-      alert('Registration failed. ' + error);
+      alert('Registration failed. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }

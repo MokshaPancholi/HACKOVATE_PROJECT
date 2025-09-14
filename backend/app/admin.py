@@ -15,9 +15,7 @@ from .models import (
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     list_display = ["username", "email", "google_id", "password"]
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('google_id', 'profile_picture')}),
-    )
+    
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

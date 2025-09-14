@@ -15,11 +15,6 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock credentials for authentication
-  const mockCredentials = {
-    email: 'john.doe@example.com',
-    password: 'Finance123!'
-  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e?.target;
@@ -63,11 +58,22 @@ const LoginForm = () => {
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      if (formData?.email === mockCredentials?.email && formData?.password === mockCredentials?.password) {
+    try {
+      const res = await fetch('http://localhost:8000/api/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData?.email,
+          password: formData?.password
+        })
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.token) {
         // Successful login
         localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('authToken', result.token);
         localStorage.setItem('userEmail', formData?.email);
         if (formData?.rememberMe) {
           localStorage.setItem('rememberMe', 'true');
@@ -76,11 +82,17 @@ const LoginForm = () => {
       } else {
         // Failed login
         setErrors({
-          general: 'Invalid email or password. Please try again.'
+          general: result.error || 'Invalid email or password. Please try again.'
         });
       }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setErrors({
+        general: 'Login failed. Please check your internet connection and try again.'
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

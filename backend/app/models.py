@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
     An extension of the default User model to include Google-specific fields.
     """
     google_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
-    password = models.URLField(max_length=12, null=True, blank=True)
+    
     def __str__(self):
         return self.username
 
