@@ -1,17 +1,18 @@
-
 from .serializers import RegistrationSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
 from app.models import CustomUser, UserProfile
-from .serializers import FinancialProfileSerializer
+from .serializers import FinancialProfileSerializer, UserSerializer, RegistrationSerializer
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from rest_framework.authtoken.models import Token
 import json
 import requests
 
@@ -64,42 +65,31 @@ def financial_profile_api(request):
         return Response(errors, status=400)
 
     elif request.method == 'GET':
-        profiles = FinancialProfile.objects.all()
-        serializer = FinancialProfileSerializer(profiles, many=True)
+        profiles = UserProfile.objects.all()
+        serializer = UserProfile(profiles, many=True)
         return Response(serializer.data)
 
 
 class ReactAppView(TemplateView):
     template_name = "index.html"
 
+MOCKAPI_KEY = "68c5e308a712aaca2b69c9fb"
+MOCK_USER_FINANCIAL_DATA = f"https://{MOCKAPI_KEY}.mockapi.io/UserProfile"
 
-MOCK_USER_FINANCIAL_DATA = {
-    "assets": {"cash": 5000, "bank_balances": {"checking": 15000, "savings": 50000}, "property_value": 350000},
-    "liabilities": {"credit_card_debt": 2500, "student_loan": 20000, "mortgage": 250000},
-    "transactions": [
-        {"date": "2025-08-01", "description": "Salary Deposit", "amount": 5000, "type": "income"},
-        {"date": "2025-08-03", "description": "Groceries", "amount": -150, "type": "expense", "category": "Food"},
-        {"date": "2025-08-05", "description": "Mortgage Payment", "amount": -1800, "type": "expense", "category": "Housing"},
-        {"date": "2025-08-10", "description": "Internet Bill", "amount": -60, "type": "expense", "category": "Utilities"},
-        {"date": "2025-08-15", "description": "Dinner Out", "amount": -80, "type": "expense", "category": "Entertainment"},
-        {"date": "2025-07-01", "description": "Salary Deposit", "amount": 5000, "type": "income"},
-        {"date": "2025-07-04", "description": "Groceries", "amount": -120, "type": "expense", "category": "Food"},
-        {"date": "2025-07-06", "description": "Car Insurance", "amount": -150, "type": "expense", "category": "Transport"},
-        {"date": "2025-06-01", "description": "Salary Deposit", "amount": 5000, "type": "income"},
-        {"date": "2025-06-05", "description": "Concert Tickets", "amount": -200, "type": "expense", "category": "Entertainment"},
-    ],
-    "epf_retirement": {"current_balance": 75000, "employee_contribution_ytd": 6000, "employer_match_ytd": 6000},
-    "credit_score": {"score": 780, "rating": "Excellent"},
-    "investments": {
-        "stocks": [
-            {"ticker": "AAPL", "shares": 10, "current_value": 1500},
-            {"ticker": "GOOGL", "shares": 5, "current_value": 7000}
-        ],
-        "mutual_funds": [
-            {"name": "Vanguard S&P 500", "units": 50, "current_value": 20000}
-        ]
-    }
-}
+def fetch_mock_financial_data():
+    try:
+        response = requests.get(MOCK_USER_FINANCIAL_DATA)
+        if response.status_code == 200:
+            data = response.json()
+            if isinstance(data, list) and len(data) > 0:
+                return data[0]  # Return the first user's data
+            return {}
+        else:
+            print(f"Error fetching mock data: {response.status_code}")
+            return {}
+    except Exception as e:
+        print(f"Exception during mock data fetch: {e}")
+        return {}
 
 
 def call_gemini_api(prompt: str, accessible_data: dict) -> str:
